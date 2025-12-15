@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore AR Heritage | Roots & Wings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/explore.css">
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html" class="logo-link">
+                    <span class="logo-text">Roots & Wings</span>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="explore.html" class="nav-link active">Explore AR</a>
+                </li>
+                <li class="nav-item">
+                    <a href="quiz.html" class="nav-link">Quiz</a>
+                </li>
+                <li class="nav-item">
+                    <a href="chatbot.html" class="nav-link">Chatbot</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Explore Heritage in AR</h1>
+            <p class="page-subtitle">Experience India's magnificent monuments through immersive 3D and AR technology</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="explore-main">
+        <div class="container">
+            <div class="explore-layout">
+                <!-- Control Panel -->
+                <div class="control-panel">
+
+                    <div class="panel-section">
+                        <h3>AR Controls</h3>
+                        <div class="control-buttons">
+                            <button id="toggleAR" class="control-btn">
+                                <i class="fas fa-mobile-alt btn-icon"></i>
+                                Enter AR Mode
+                            </button>
+                            <button id="resetView" class="control-btn">
+                                <i class="fas fa-redo btn-icon"></i>
+                                Reset View
+                            </button>
+                            <button id="fullscreen" class="control-btn">
+                                <i class="fas fa-expand btn-icon"></i>
+                                Fullscreen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3>Audio Guide</h3>
+                        <div class="audio-controls">
+                            <button id="playNarration" class="control-btn audio-btn">
+                                <i class="fas fa-play btn-icon"></i>
+                                Play Narration
+                            </button>
+                            <button id="pauseNarration" class="control-btn audio-btn" disabled>
+                                <i class="fas fa-pause btn-icon"></i>
+                                Pause
+                            </button>
+                            <div class="volume-control">
+                                <label for="volumeSlider">Volume:</label>
+                                <input type="range" id="volumeSlider" min="0" max="100" value="70" class="volume-slider">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3>View Options</h3>
+                        <div class="view-options">
+                            <button id="dayMode" class="view-btn active">
+                                <i class="fas fa-sun btn-icon"></i>
+                                Day View
+                            </button>
+                            <button id="nightMode" class="view-btn">
+                                <i class="fas fa-moon btn-icon"></i>
+                                Night View
+                            </button>
+                            <button id="historicalMode" class="view-btn">
+                                <i class="fas fa-landmark btn-icon"></i>
+                                Historical
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Model Viewer -->
+                <div class="model-viewer">
+                    <!-- Model Selection -->
+                    <div class="model-selector">
+                        <button class="model-btn active" data-model="taj-mahal" onclick="window.ExploreApp.switchModel('taj-mahal')">
+                            <i class="fas fa-landmark"></i>
+                            Taj Mahal
+                        </button>
+                        <button class="model-btn" data-model="konark" onclick="window.ExploreApp.switchModel('konark')">
+                            <i class="fas fa-sun"></i>
+                            Konark Temple
+                        </button>
+                        <button class="model-btn" data-model="khajuraho" onclick="window.ExploreApp.switchModel('khajuraho')">
+                            <i class="fas fa-temple"></i>
+                            Khajuraho Temple
+                        </button>
+                        <button class="model-btn" data-model="ajanta" onclick="window.ExploreApp.switchModel('ajanta')">
+                            <i class="fas fa-mountain"></i>
+                            Ajanta Caves
+                        </button>
+                        <button class="model-btn" data-model="sanchi" onclick="window.ExploreApp.switchModel('sanchi')">
+                            <i class="fas fa-circle"></i>
+                            Sanchi Stupa
+                        </button>
+                    </div>
+
+                    <!-- Taj Mahal Model -->
+                    <div id="taj-mahal-model" class="sketchfab-embed-wrapper active">
+                        <iframe 
+                            title="Taj Mahal with Gate - 3D Model" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true" 
+                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                            xr-spatial-tracking 
+                            execution-while-out-of-viewport 
+                            execution-while-not-rendered 
+                            web-share 
+                            src="https://sketchfab.com/models/75c07e453b9549a590386ed8116af78b/embed"
+                            style="width: 100%; height: 100%;">
+                        </iframe>
+                    </div>
+
+                    <!-- Konark Sun Temple Model -->
+                    <div id="konark-model" class="sketchfab-embed-wrapper">
+                        <iframe 
+                            title="Konark Sun Temple" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true" 
+                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                            xr-spatial-tracking 
+                            execution-while-out-of-viewport 
+                            execution-while-not-rendered 
+                            web-share 
+                            src="https://sketchfab.com/models/f7b47d96fc144eef87fcc97988f477df/embed"
+                            style="width: 100%; height: 100%;">
+                        </iframe>
+                    </div>
+
+                    <!-- Khajuraho Temple Model -->
+                    <div id="khajuraho-model" class="sketchfab-embed-wrapper">
+                        <iframe 
+                            title="Khajuraho Temple" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true" 
+                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                            xr-spatial-tracking 
+                            execution-while-out-of-viewport 
+                            execution-while-not-rendered 
+                            web-share 
+                            src="https://sketchfab.com/models/dd99586619e74f24b8dec10cc009c360/embed"
+                            style="width: 100%; height: 100%;">
+                        </iframe>
+                    </div>
+
+                    <!-- Ajanta Caves Model -->
+                    <div id="ajanta-model" class="sketchfab-embed-wrapper">
+                        <iframe 
+                            title="Ajanta Cave 01" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true" 
+                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                            xr-spatial-tracking 
+                            execution-while-out-of-viewport 
+                            execution-while-not-rendered 
+                            web-share 
+                            src="https://sketchfab.com/models/0e0aa7dd247d4d818c9ecb1e7be3bcc6/embed"
+                            style="width: 100%; height: 100%;">
+                        </iframe>
+                    </div>
+
+                    <!-- Sanchi Stupa Model -->
+                    <div id="sanchi-model" class="sketchfab-embed-wrapper">
+                        <iframe 
+                            title="Great Stupa in Sanchi" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true" 
+                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                            xr-spatial-tracking 
+                            execution-while-out-of-viewport 
+                            execution-while-not-rendered 
+                            web-share 
+                            src="https://sketchfab.com/models/2fd62cd6ee804455bda1ad0a324080cb/embed"
+                            style="width: 100%; height: 100%;">
+                        </iframe>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+
+            <!-- Information Panel -->
+            <div class="info-panel" id="infoPanel">
+                <div class="info-header">
+                    <h3 id="monumentName">Select a Monument</h3>
+                    <button id="closeInfo" class="close-btn">&times;</button>
+                </div>
+                <div class="info-content">
+                    <div id="monumentInfo">
+                        <p>Choose a heritage site from the dropdown menu to explore its rich history and architectural details in 3D.</p>
+                    </div>
+                    <div class="info-tabs">
+                        <button class="tab-btn active" data-tab="history">History</button>
+                        <button class="tab-btn" data-tab="architecture">Architecture</button>
+                        <button class="tab-btn" data-tab="culture">Culture</button>
+                        <button class="tab-btn" data-tab="facts">Fun Facts</button>
+                    </div>
+                    <div class="tab-content">
+                        <div id="history" class="tab-pane active">
+                            <h4>Historical Background</h4>
+                            <p>Select a monument to learn about its fascinating history.</p>
+                        </div>
+                        <div id="architecture" class="tab-pane">
+                            <h4>Architectural Features</h4>
+                            <p>Discover the unique architectural elements and construction techniques.</p>
+                        </div>
+                        <div id="culture" class="tab-pane">
+                            <h4>Cultural Significance</h4>
+                            <p>Explore the cultural and religious importance of this heritage site.</p>
+                        </div>
+                        <div id="facts" class="tab-pane">
+                            <h4>Interesting Facts</h4>
+                            <p>Learn amazing facts and trivia about this monument.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="images/logo.png" alt="Roots & Wings" class="footer-logo-img">
+                        <span class="footer-logo-text">Roots & Wings</span>
+                    </div>
+                    <p class="footer-description">
+                        Preserving India's cultural heritage through innovative AR/VR technology.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="explore.html">Explore AR</a></li>
+                        <li><a href="quiz.html">Cultural Quiz</a></li>
+                        <li><a href="chatbot.html">AI Assistant</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Roots & Wings | Smart India Hackathon 2025. All rights reserved.</p>
+                <div class="visitor-counter">
+                    <p>Visitors: <a href='http://www.freevisitorcounters.com'>Free Counters</a></p>
+                    <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=2eb59dbfece33e4c51c62ccb7912bf6b3c96d291'></script>
+                    <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1395969/t/5"></script>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/explore.js"></script>
+</body>
+</html>
