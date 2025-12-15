@@ -1,0 +1,30 @@
+Subject: New Contact Form Submission - {{subject}} | Roots & Wings
+
+🏛️ AR CULTURAL HERITAGE PLATFORM - ROOTS & WINGS
+===============================================
+
+NEW CONTACT FORM SUBMISSION
+
+FROM: {{from_name}}
+EMAIL: {{from_email}}
+PHONE: {{phone}}
+SUBJECT: {{subject}}
+NEWSLETTER: {{newsletter}}
+
+MESSAGE:
+--------
+{{message}}
+
+SUBMISSION DETAILS:
+------------------
+Timestamp: {{timestamp}}
+Page URL: {{page_url}}
+User Agent: {{user_agent}}
+
+===============================================
+
+This email was sent from the Roots & Wings contact form.
+Please respond directly to: {{from_email}}
+
+© 2025 Roots & Wings | AR Cultural Heritage Platform
+Smart India Hackathon 2025
