@@ -4,14 +4,10 @@
  */
 
 // ===== GLOBAL VARIABLES =====
-let currentSite = null;
-let arScene = null;
-let modelContainer = null;
-let currentModel = null;
-let speechSynthesis = null;
-let currentUtterance = null;
-let isNarrationPlaying = false;
+let currentSite = 'taj-mahal';
 let isARMode = false;
+let isNarrationPlaying = false;
+let currentViewMode = 'day';
 
 // Heritage site data
 const heritageSites = {
@@ -19,9 +15,6 @@ const heritageSites = {
         name: 'Taj Mahal',
         location: 'Agra, Uttar Pradesh',
         model: 'taj-mahal-model',
-        position: '0 -1 -5',
-        scale: '0.5 0.5 0.5',
-        rotation: '0 0 0',
         history: `The Taj Mahal was built between 1632 and 1653 by Mughal Emperor Shah Jahan as a mausoleum for his beloved wife Mumtaz Mahal. This ivory-white marble masterpiece is considered one of the finest examples of Mughal architecture, combining elements from Islamic, Persian, Ottoman Turkish, and Indian architectural styles.`,
         architecture: `The Taj Mahal features a central dome surrounded by four smaller domes, four minarets, and intricate inlay work known as pietra dura. The main dome is 73 meters high and is surrounded by four smaller domes. The building stands on a square plinth and consists of a symmetrical building with an iwan (arch-shaped doorway) topped by a large dome and finial.`,
         culture: `The Taj Mahal represents the pinnacle of Mughal art and architecture. It symbolizes eternal love and is considered a jewel of Muslim art in India. The monument attracts millions of visitors annually and has been a UNESCO World Heritage Site since 1983.`,
@@ -37,9 +30,6 @@ const heritageSites = {
         name: 'Konark Sun Temple',
         location: 'Konark, Odisha',
         model: 'konark-model',
-        position: '0 -1 -5',
-        scale: '0.8 0.8 0.8',
-        rotation: '0 45 0',
         history: `The Konark Sun Temple was built in the 13th century CE by King Narasimhadeva I of the Eastern Ganga Dynasty. Dedicated to the Hindu sun god Surya, it was conceived as a gigantic chariot with elaborately carved stone wheels, pillars, and walls.`,
         architecture: `The temple is designed in the shape of a colossal chariot with 24 wheels, each about 10 feet in diameter, pulled by seven spirited horses. The temple is built from Khondalite rocks and features intricate carvings depicting various aspects of life, including erotic sculptures, animals, and mythical creatures.`,
         culture: `The temple represents the pinnacle of Kalinga architecture and is dedicated to Surya, the sun god. It served as a major pilgrimage center and was known as the 'Black Pagoda' by European sailors. The temple's design reflects the ancient Indian understanding of astronomy and time.`,
@@ -55,9 +45,6 @@ const heritageSites = {
         name: 'Khajuraho Temples',
         location: 'Khajuraho, Madhya Pradesh',
         model: 'khajuraho-model',
-        position: '0 -1 -5',
-        scale: '0.6 0.6 0.6',
-        rotation: '0 30 0',
         history: `The Khajuraho temples were built between 950 and 1050 CE by the Chandela dynasty. Originally, there were 85 temples, but only 25 survive today. These temples represent the pinnacle of Indian architectural achievement and artistic expression.`,
         architecture: `The temples are built in the Nagara style of architecture, characterized by their towering spires (shikharas) and intricate sculptural decorations. The temples are famous for their erotic sculptures, which represent only 10% of the total carvings, alongside depictions of gods, goddesses, musicians, and dancers.`,
         culture: `The temples reflect the liberal and sophisticated culture of medieval India. They celebrate human emotions and the divine in equal measure. The erotic sculptures are believed to represent the tantric traditions and the celebration of life in all its forms.`,
@@ -73,9 +60,6 @@ const heritageSites = {
         name: 'Ajanta Caves',
         location: 'Aurangabad, Maharashtra',
         model: 'ajanta-model',
-        position: '0 -1 -5',
-        scale: '1 1 1',
-        rotation: '0 0 0',
         history: `The Ajanta Caves are a series of 30 rock-cut Buddhist cave monuments dating from the 2nd century BCE to about 480 CE. They were carved into the volcanic lava of the Deccan in the Sahyadri hills and represent the golden age of Indian art.`,
         architecture: `The caves are carved into a horseshoe-shaped cliff and consist of monasteries (viharas) and worship halls (chaityas). The caves feature elaborate facades, intricate sculptures, and world-famous paintings depicting the life of Buddha and Jataka tales.`,
         culture: `The Ajanta Caves represent the zenith of ancient Indian art and Buddhism. The paintings and sculptures provide insights into the religious, social, and cultural life of ancient India. They showcase the synthesis of architecture, sculpture, and painting.`,
@@ -91,9 +75,6 @@ const heritageSites = {
         name: 'Sanchi Stupa',
         location: 'Sanchi, Madhya Pradesh',
         model: 'sanchi-model',
-        position: '0 -1 -5',
-        scale: '0.7 0.7 0.7',
-        rotation: '0 0 0',
         history: `The Great Stupa at Sanchi was originally built by Emperor Ashoka in the 3rd century BCE. It was later enlarged and decorated with gateways and railings. The stupa is one of the oldest stone structures in India and a major Buddhist pilgrimage site.`,
         architecture: `The Great Stupa is a hemispherical dome (anda) representing the cosmic mountain. It is surrounded by a stone railing (vedika) with four ornately carved gateways (toranas) depicting scenes from Buddha's life and Jataka tales. The structure is topped with a square platform (harmika) and a triple umbrella (chattra).`,
         culture: `Sanchi represents the birthplace of Buddhist architecture in India. The stupa contains relics of Buddha's disciples and serves as a symbol of Buddha's parinirvana (final liberation). It played a crucial role in the spread of Buddhism across Asia.`,
@@ -103,548 +84,591 @@ const heritageSites = {
             'The four gateways were added in the 1st century BCE',
             'It survived because it was located in a remote area'
         ],
+        narration: 'Welcome to the ancient Sanchi Stupa, one of the oldest stone structures in India. Built by Emperor Ashoka in the 3rd century BCE, this hemispherical dome represents the cosmic mountain and serves as a sacred Buddhist monument containing relics of the Buddha\'s disciples.'
     }
 };
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Explore page loaded');
     initializeExplore();
 });
 
 function initializeExplore() {
-    // Set up event listeners
+    // Set up event listeners for left panel buttons
     setupEventListeners();
     
-    // Set up model switcher
+    // Initialize model switcher
     setupModelSwitcher();
     
-    // Initialize A-Frame scene
-    initializeAFrameScene();
+    // Initialize info panel tabs
+    setupInfoTabs();
     
-    // Check for URL parameters
-    checkUrlParameters();
+    // Show initial info for Taj Mahal
+    updateInfoPanel('taj-mahal');
     
-    // Hide loading screen after scene is ready
-    setTimeout(() => {
-        hideLoadingScreen();
-    }, 2000);
+    console.log('Explore app initialized');
 }
 
+// ===== SETUP EVENT LISTENERS =====
 function setupEventListeners() {
-    // Site selector
-    const siteSelector = document.getElementById('siteSelector');
-    siteSelector.addEventListener('change', handleSiteSelection);
+    console.log('Setting up event listeners...');
     
-    // Control buttons
-    document.getElementById('toggleAR').addEventListener('click', toggleARMode);
-    document.getElementById('resetView').addEventListener('click', resetView);
-    document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+    // AR Controls
+    const toggleAR = document.getElementById('toggleAR');
+    const resetView = document.getElementById('resetView');
+    const fullscreen = document.getElementById('fullscreen');
     
-    // Audio controls
-    document.getElementById('playNarration').addEventListener('click', playNarration);
-    document.getElementById('pauseNarration').addEventListener('click', pauseNarration);
-    document.getElementById('volumeSlider').addEventListener('input', adjustVolume);
-    
-    // View mode buttons
-    document.getElementById('dayMode').addEventListener('click', () => setViewMode('day'));
-    document.getElementById('nightMode').addEventListener('click', () => setViewMode('night'));
-    document.getElementById('historicalMode').addEventListener('click', () => setViewMode('historical'));
-    
-    // Info panel
-    document.getElementById('closeInfo').addEventListener('click', closeInfoPanel);
-    
-    // Tab buttons
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-    
-    // AR overlay
-    document.getElementById('exitAR').addEventListener('click', exitARMode);
-}
-
-function initializeAFrameScene() {
-    if (arScene) {
-        arScene.addEventListener('loaded', function() {
-            console.log('A-Frame scene loaded');
-            // Scene is ready for interaction
-        });
-        
-        // Add click handlers for models
-        arScene.addEventListener('click', function(event) {
-            if (event.detail.target && event.detail.target.id === 'modelContainer') {
-                showInfoPanel();
-            }
-        });
-    }
-}
-
-// ===== SITE SELECTION =====
-function handleSiteSelection(event) {
-    const selectedSite = event.target.value;
-    if (selectedSite && heritageSites[selectedSite]) {
-        loadHeritageSite(selectedSite);
-    } else {
-        clearModel();
-    }
-}
-
-function loadHeritageSite(siteKey) {
-    const site = heritageSites[siteKey];
-    if (!site) return;
-    
-    currentSite = siteKey;
-    showLoadingScreen();
-    
-    // Clear existing model
-    clearModel();
-    
-    // Load new model
-    setTimeout(() => {
-        loadModel(site);
-        updateInfoPanel(site);
-        hideLoadingScreen();
-        showInfoPanel();
-    }, 1000);
-}
-
-function loadModel(site) {
-    if (!modelContainer) return;
-    
-    // Create new model entity
-    const modelEntity = document.createElement('a-gltf-model');
-    modelEntity.setAttribute('src', `#${site.model}`);
-    modelEntity.setAttribute('position', site.position);
-    modelEntity.setAttribute('scale', site.scale);
-    modelEntity.setAttribute('rotation', site.rotation);
-    modelEntity.setAttribute('animation-mixer', 'clip: *; loop: repeat');
-    modelEntity.setAttribute('shadow', 'cast: true; receive: true');
-    
-    // Add interaction
-    modelEntity.setAttribute('cursor-listener', '');
-    modelEntity.setAttribute('class', 'clickable');
-    
-    // Add to container
-    modelContainer.appendChild(modelEntity);
-    currentModel = modelEntity;
-    
-    // Add hotspots
-    addHotspots(site);
-}
-
-function clearModel() {
-    if (modelContainer) {
-        while (modelContainer.firstChild) {
-            modelContainer.removeChild(modelContainer.firstChild);
-        }
-    }
-    currentModel = null;
-    clearHotspots();
-}
-
-function addHotspots(site) {
-    const hotspotsContainer = document.querySelector('#hotspots');
-    if (!hotspotsContainer) return;
-    
-    // Clear existing hotspots
-    clearHotspots();
-    
-    // Add sample hotspots based on site
-    const hotspotPositions = getHotspotPositions(site);
-    
-    hotspotPositions.forEach((pos, index) => {
-        const hotspot = document.createElement('a-sphere');
-        hotspot.setAttribute('position', pos.position);
-        hotspot.setAttribute('radius', '0.1');
-        hotspot.setAttribute('color', '#FF9933');
-        hotspot.setAttribute('opacity', '0.8');
-        hotspot.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dir: alternate; dur: 1000; loop: true');
-        hotspot.setAttribute('cursor-listener', '');
-        hotspot.setAttribute('class', 'hotspot');
-        hotspot.setAttribute('data-info', pos.info);
-        
-        hotspotsContainer.appendChild(hotspot);
-    });
-}
-
-function getHotspotPositions(site) {
-    // Return different hotspot positions based on the site
-    const positions = {
-        'taj-mahal': [
-            { position: '0 2 -5', info: 'Main Dome - 73 meters high' },
-            { position: '-2 0 -5', info: 'Minaret - Leaning outward for earthquake protection' },
-            { position: '2 0 -5', info: 'Pietra Dura - Intricate inlay work' }
-        ],
-        'konark': [
-            { position: '1 0 -5', info: 'Chariot Wheel - Functional sundial' },
-            { position: '-1 1 -5', info: 'Horse Sculpture - Seven horses for seven days' },
-            { position: '0 2 -5', info: 'Main Sanctum - Dedicated to Surya' }
-        ],
-        'khajuraho': [
-            { position: '0 2 -5', info: 'Shikhara - Towering spire' },
-            { position: '1 1 -5', info: 'Sculptural Art - Divine and human forms' },
-            { position: '-1 0 -5', info: 'Temple Base - Interlocking stone construction' }
-        ],
-        'ajanta': [
-            { position: '0 1 -5', info: 'Cave Paintings - 1500-year-old frescoes' },
-            { position: '2 0 -5', info: 'Chaitya Hall - Buddhist worship hall' },
-            { position: '-2 0 -5', info: 'Vihara - Monastery for monks' }
-        ],
-        'sanchi': [
-            { position: '0 2 -5', info: 'Stupa Dome - Cosmic mountain symbol' },
-            { position: '1 0 -5', info: 'Torana Gateway - Carved with Jataka tales' },
-            { position: '0 0 -3', info: 'Harmika - Square platform with relics' }
-        ]
-    };
-    
-    return positions[currentSite] || [];
-}
-
-function clearHotspots() {
-    const hotspotsContainer = document.querySelector('#hotspots');
-    if (hotspotsContainer) {
-        while (hotspotsContainer.firstChild) {
-            hotspotsContainer.removeChild(hotspotsContainer.firstChild);
-        }
-    }
-}
-
-// ===== AR FUNCTIONALITY =====
-function toggleARMode() {
-    if (!isARMode) {
-        enterARMode();
-    } else {
-        exitARMode();
-    }
-}
-
-function enterARMode() {
-    if (!arScene) return;
-    
-    // Check for WebXR support
-    if (navigator.xr) {
-        navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-            if (supported) {
-                startARSession();
-            } else {
-                showARFallback();
-            }
-        });
-    } else {
-        showARFallback();
-    }
-}
-
-function startARSession() {
-    isARMode = true;
-    document.getElementById('arOverlay').classList.remove('hidden');
-    document.getElementById('toggleAR').innerHTML = '<span class="btn-icon">📱</span> Exit AR Mode';
-    
-    // Enable AR mode in A-Frame
-    arScene.setAttribute('vr-mode-ui', 'enabled: true');
-    arScene.setAttribute('device-orientation-permission-ui', 'enabled: true');
-}
-
-function showARFallback() {
-    alert('AR mode is not supported on this device. Please use a mobile device with AR capabilities.');
-}
-
-function exitARMode() {
-    isARMode = false;
-    document.getElementById('arOverlay').classList.add('hidden');
-    document.getElementById('toggleAR').innerHTML = '<span class="btn-icon">📱</span> Enter AR Mode';
-    
-    // Disable AR mode in A-Frame
-    arScene.setAttribute('vr-mode-ui', 'enabled: false');
-}
-
-// ===== VIEW CONTROLS =====
-function resetView() {
-    const camera = document.querySelector('#camera');
-    if (camera) {
-        camera.setAttribute('position', '0 1.6 3');
-        camera.setAttribute('rotation', '0 0 0');
+    if (toggleAR) {
+        toggleAR.addEventListener('click', toggleARMode);
+        console.log('AR button listener added');
     }
     
-    if (currentModel) {
-        currentModel.setAttribute('rotation', heritageSites[currentSite].rotation);
-    }
-}
-
-function toggleFullscreen() {
-    const viewer = document.querySelector('.ar-viewer');
-    
-    if (!document.fullscreenElement) {
-        viewer.requestFullscreen().catch(err => {
-            console.log('Error attempting to enable fullscreen:', err);
-        });
-        document.getElementById('fullscreen').innerHTML = '<span class="btn-icon">⛶</span> Exit Fullscreen';
-    } else {
-        document.exitFullscreen();
-        document.getElementById('fullscreen').innerHTML = '<span class="btn-icon">⛶</span> Fullscreen';
-    }
-}
-
-function setViewMode(mode) {
-    const sky = document.querySelector('#sceneSky');
-    const sunLight = document.querySelector('#sunLight');
-    
-    // Update button states
-    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`${mode}Mode`).classList.add('active');
-    
-    switch (mode) {
-        case 'day':
-            sky.setAttribute('src', '#sky-day');
-            sunLight.setAttribute('intensity', '1');
-            sunLight.setAttribute('color', '#FFF');
-            break;
-        case 'night':
-            sky.setAttribute('src', '#sky-night');
-            sunLight.setAttribute('intensity', '0.3');
-            sunLight.setAttribute('color', '#4A90E2');
-            break;
-        case 'historical':
-            sky.setAttribute('color', '#8B4513');
-            sunLight.setAttribute('intensity', '0.7');
-            sunLight.setAttribute('color', '#FFD700');
-            break;
-    }
-}
-
-// ===== AUDIO NARRATION =====
-function playNarration() {
-    if (!speechSynthesis || !currentSite) return;
-    
-    const site = heritageSites[currentSite];
-    if (!site.narration) return;
-    
-    // Stop any existing narration
-    if (isNarrationPlaying) {
-        speechSynthesis.cancel();
+    if (resetView) {
+        resetView.addEventListener('click', resetSketchfabView);
+        console.log('Reset view button listener added');
     }
     
-    // Create new utterance
-    currentUtterance = new SpeechSynthesisUtterance(site.narration);
-    currentUtterance.rate = 0.8;
-    currentUtterance.pitch = 1;
-    currentUtterance.volume = document.getElementById('volumeSlider').value / 100;
+    if (fullscreen) {
+        fullscreen.addEventListener('click', toggleFullscreen);
+        console.log('Fullscreen button listener added');
+    }
     
-    // Set up event listeners
-    currentUtterance.onstart = function() {
-        isNarrationPlaying = true;
-        document.getElementById('playNarration').disabled = true;
-        document.getElementById('pauseNarration').disabled = false;
-    };
+    // Audio Guide
+    const playNarration = document.getElementById('playNarration');
+    const pauseNarration = document.getElementById('pauseNarration');
+    const volumeSlider = document.getElementById('volumeSlider');
     
-    currentUtterance.onend = function() {
-        isNarrationPlaying = false;
-        document.getElementById('playNarration').disabled = false;
-        document.getElementById('pauseNarration').disabled = true;
-    };
+    if (playNarration) {
+        playNarration.addEventListener('click', playAudioNarration);
+        console.log('Play narration button listener added');
+    }
     
-    // Start narration
-    speechSynthesis.speak(currentUtterance);
-}
-
-function pauseNarration() {
-    if (speechSynthesis && isNarrationPlaying) {
-        speechSynthesis.cancel();
-        isNarrationPlaying = false;
-        document.getElementById('playNarration').disabled = false;
-        document.getElementById('pauseNarration').disabled = true;
+    if (pauseNarration) {
+        pauseNarration.addEventListener('click', pauseAudioNarration);
+        console.log('Pause narration button listener added');
+    }
+    
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', adjustVolume);
+        console.log('Volume slider listener added');
+    }
+    
+    // View Options
+    const dayMode = document.getElementById('dayMode');
+    const nightMode = document.getElementById('nightMode');
+    const historicalMode = document.getElementById('historicalMode');
+    
+    if (dayMode) {
+        dayMode.addEventListener('click', () => setViewMode('day'));
+        console.log('Day mode button listener added');
+    }
+    
+    if (nightMode) {
+        nightMode.addEventListener('click', () => setViewMode('night'));
+        console.log('Night mode button listener added');
+    }
+    
+    if (historicalMode) {
+        historicalMode.addEventListener('click', () => setViewMode('historical'));
+        console.log('Historical mode button listener added');
+    }
+    
+    // Info Panel
+    const closeInfo = document.getElementById('closeInfo');
+    if (closeInfo) {
+        closeInfo.addEventListener('click', closeInfoPanel);
+        console.log('Close info button listener added');
     }
 }
-
-function adjustVolume(event) {
-    const volume = event.target.value / 100;
-    if (currentUtterance) {
-        currentUtterance.volume = volume;
-    }
-}
-
-// ===== INFO PANEL =====
-function updateInfoPanel(site) {
-    document.getElementById('monumentName').textContent = site.name;
-    
-    // Update tab content
-    document.getElementById('history').innerHTML = `
-        <h4>Historical Background</h4>
-        <p>${site.history}</p>
-    `;
-    
-    document.getElementById('architecture').innerHTML = `
-        <h4>Architectural Features</h4>
-        <p>${site.architecture}</p>
-    `;
-    
-    document.getElementById('culture').innerHTML = `
-        <h4>Cultural Significance</h4>
-        <p>${site.culture}</p>
-    `;
-    
-    document.getElementById('facts').innerHTML = `
-        <h4>Interesting Facts</h4>
-        <ul>
-            ${site.facts.map(fact => `<li>${fact}</li>`).join('')}
-        </ul>
-    `;
-}
-
-function showInfoPanel() {
-    document.getElementById('infoPanel').classList.add('active');
-}
-
-function closeInfoPanel() {
-    document.getElementById('infoPanel').classList.remove('active');
-}
-
-function switchTab(tabName) {
-    // Update button states
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    
-    // Update content
-    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-}
-
-// ===== UTILITY FUNCTIONS =====
-function showLoadingScreen() {
-    document.getElementById('loadingScreen').classList.remove('hidden');
-}
-
-function hideLoadingScreen() {
-    document.getElementById('loadingScreen').classList.add('hidden');
-}
-
-function checkUrlParameters() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const site = urlParams.get('site');
-    
-    if (site && heritageSites[site]) {
-        document.getElementById('siteSelector').value = site;
-        loadHeritageSite(site);
-    }
-}
-
-// ===== ERROR HANDLING =====
-window.addEventListener('error', function(e) {
-    console.error('Explore page error:', e.error);
-    hideLoadingScreen();
-});
-
-// ===== CLEANUP =====
-window.addEventListener('beforeunload', function() {
-    if (speechSynthesis && isNarrationPlaying) {
-        speechSynthesis.cancel();
-    }
-});
 
 // ===== MODEL SWITCHER =====
 function setupModelSwitcher() {
     console.log('Setting up model switcher...');
     const modelButtons = document.querySelectorAll('.model-btn');
-    const modelWrappers = document.querySelectorAll('.sketchfab-embed-wrapper');
     
-    console.log('Found buttons:', modelButtons.length);
-    console.log('Found wrappers:', modelWrappers.length);
+    console.log('Found model buttons:', modelButtons.length);
     
-    modelButtons.forEach((button, index) => {
-        console.log(`Button ${index}:`, button.getAttribute('data-model'));
+    modelButtons.forEach(button => {
+        const modelId = button.getAttribute('data-model');
+        console.log(`Adding listener for model: ${modelId}`);
+        
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            const targetModel = this.getAttribute('data-model');
-            console.log('Clicked model:', targetModel);
+            console.log(`Model button clicked: ${modelId}`);
             
-            // Remove active class from all buttons
+            // Update active button
             modelButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
             this.classList.add('active');
             
-            // Hide all model wrappers
-            modelWrappers.forEach(wrapper => {
-                wrapper.classList.remove('active');
-                console.log('Hiding wrapper:', wrapper.id);
-            });
-            
-            // Show target model wrapper
-            const targetWrapper = document.getElementById(`${targetModel}-model`);
-            console.log('Target wrapper:', targetWrapper);
-            if (targetWrapper) {
-                targetWrapper.classList.add('active');
-                console.log('Showing wrapper:', targetWrapper.id);
-            } else {
-                console.error('Target wrapper not found:', `${targetModel}-model`);
-            }
-            
-            // Update monument name in info panel
-            const monumentName = document.getElementById('monumentName');
-            if (monumentName) {
-                let siteName;
-                switch(targetModel) {
-                    case 'taj-mahal':
-                        siteName = 'Taj Mahal';
-                        break;
-                    case 'konark':
-                        siteName = 'Konark Sun Temple';
-                        break;
-                    case 'khajuraho':
-                        siteName = 'Khajuraho Temple';
-                        break;
-                    case 'ajanta':
-                        siteName = 'Ajanta Caves';
-                        break;
-                    case 'sanchi':
-                        siteName = 'Sanchi Stupa';
-                        break;
-                    default:
-                        siteName = 'Select a Monument';
-                }
-                monumentName.textContent = siteName;
-            }
+            // Switch model
+            switchModel(modelId);
         });
     });
 }
 
-// ===== SIMPLE MODEL SWITCHER FOR TESTING =====
-function switchModel(modelName) {
-    console.log('Switching to model:', modelName);
+function switchModel(modelId) {
+    console.log(`Switching to model: ${modelId}`);
+    currentSite = modelId;
     
     // Hide all models
     const allWrappers = document.querySelectorAll('.sketchfab-embed-wrapper');
     allWrappers.forEach(wrapper => {
         wrapper.classList.remove('active');
+        wrapper.style.display = 'none';
     });
     
     // Show target model
-    const targetWrapper = document.getElementById(`${modelName}-model`);
+    const targetWrapper = document.getElementById(`${modelId}-model`);
     if (targetWrapper) {
         targetWrapper.classList.add('active');
-        console.log('Successfully switched to:', modelName);
+        targetWrapper.style.display = 'block';
+        console.log(`Successfully switched to: ${modelId}`);
+        
+        // Update info panel
+        updateInfoPanel(modelId);
     } else {
-        console.error('Model not found:', modelName);
+        console.error(`Model wrapper not found: ${modelId}-model`);
+    }
+}
+
+// ===== LEFT PANEL BUTTON FUNCTIONS =====
+
+// 1. AR Mode Function
+function toggleARMode() {
+    console.log('AR Mode button clicked');
+    
+    const button = document.getElementById('toggleAR');
+    const modelViewer = document.querySelector('.model-viewer');
+    
+    if (!isARMode) {
+        // Enter AR Mode
+        isARMode = true;
+        
+        // Update button text and icon
+        button.innerHTML = '<i class="fas fa-times btn-icon"></i> Exit AR Mode';
+        button.classList.add('active');
+        
+        // For Sketchfab models, we need to use their AR functionality
+        // Try to activate AR on the current iframe
+        const activeIframe = document.querySelector('.sketchfab-embed-wrapper.active iframe');
+        if (activeIframe && activeIframe.contentWindow) {
+            try {
+                // This is a simplified approach - actual AR would require more complex handling
+                activeIframe.style.border = '3px solid #4CAF50';
+                
+                // Show AR instructions
+                showNotification('AR Mode Activated! View the model in AR by clicking the AR button in the 3D viewer.');
+            } catch (error) {
+                console.log('AR activation error:', error);
+                showNotification('To use AR, click the AR button in the 3D viewer toolbar.');
+            }
+        }
+        
+        // Add AR mode styling
+        if (modelViewer) {
+            modelViewer.classList.add('ar-mode-active');
+        }
+        
+    } else {
+        // Exit AR Mode
+        isARMode = false;
+        
+        // Update button text and icon
+        button.innerHTML = '<i class="fas fa-mobile-alt btn-icon"></i> Enter AR Mode';
+        button.classList.remove('active');
+        
+        // Remove AR styling
+        const activeIframe = document.querySelector('.sketchfab-embed-wrapper.active iframe');
+        if (activeIframe) {
+            activeIframe.style.border = 'none';
+        }
+        
+        if (modelViewer) {
+            modelViewer.classList.remove('ar-mode-active');
+        }
+        
+        showNotification('AR Mode Deactivated');
+    }
+}
+
+// 2. Reset View Function
+function resetSketchfabView() {
+    console.log('Reset View button clicked');
+    
+    const activeIframe = document.querySelector('.sketchfab-embed-wrapper.active iframe');
+    
+    if (activeIframe && activeIframe.contentWindow) {
+        try {
+            // For Sketchfab iframes, we can try to send a postMessage
+            // This assumes the Sketchfab viewer supports certain messages
+            activeIframe.contentWindow.postMessage({
+                type: 'viewer:reset'
+            }, '*');
+            
+            // Alternative: trigger spacebar key event (which often resets view in Sketchfab)
+            const event = new KeyboardEvent('keydown', {
+                key: ' ',
+                keyCode: 32,
+                which: 32,
+                code: 'Space',
+                bubbles: true
+            });
+            activeIframe.dispatchEvent(event);
+            
+            showNotification('View reset to default position');
+        } catch (error) {
+            console.log('Reset view error:', error);
+            showNotification('Click on the 3D model and press SPACE to reset view');
+        }
+    } else {
+        showNotification('Please select a 3D model first');
+    }
+}
+
+// 3. Fullscreen Function
+function toggleFullscreen() {
+    console.log('Fullscreen button clicked');
+    
+    const modelViewer = document.querySelector('.model-viewer');
+    const button = document.getElementById('fullscreen');
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        if (modelViewer.requestFullscreen) {
+            modelViewer.requestFullscreen();
+        } else if (modelViewer.webkitRequestFullscreen) {
+            modelViewer.webkitRequestFullscreen();
+        } else if (modelViewer.msRequestFullscreen) {
+            modelViewer.msRequestFullscreen();
+        }
+        
+        button.innerHTML = '<i class="fas fa-compress btn-icon"></i> Exit Fullscreen';
+        button.classList.add('active');
+        
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        
+        button.innerHTML = '<i class="fas fa-expand btn-icon"></i> Fullscreen';
+        button.classList.remove('active');
+    }
+}
+
+// 4. Audio Functions
+function playAudioNarration() {
+    console.log('Play Narration button clicked');
+    
+    const site = heritageSites[currentSite];
+    if (!site || !site.narration) {
+        showNotification('No narration available for this monument');
+        return;
     }
     
-    // Update buttons
-    const allButtons = document.querySelectorAll('.model-btn');
-    allButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-model') === modelName) {
+    const playBtn = document.getElementById('playNarration');
+    const pauseBtn = document.getElementById('pauseNarration');
+    
+    // Check if Speech Synthesis is supported
+    if ('speechSynthesis' in window) {
+        // Stop any current speech
+        window.speechSynthesis.cancel();
+        
+        // Create new speech utterance
+        const utterance = new SpeechSynthesisUtterance(site.narration);
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.pitch = 1;
+        utterance.volume = document.getElementById('volumeSlider').value / 100;
+        
+        // Set up event handlers
+        utterance.onstart = function() {
+            isNarrationPlaying = true;
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            showNotification(`Playing narration: ${site.name}`);
+        };
+        
+        utterance.onend = function() {
+            isNarrationPlaying = false;
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+        };
+        
+        utterance.onerror = function() {
+            isNarrationPlaying = false;
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+            showNotification('Error playing narration');
+        };
+        
+        // Start speech
+        window.speechSynthesis.speak(utterance);
+        
+    } else {
+        // Fallback: Show text in notification
+        showNotification(`Narration: ${site.narration.substring(0, 100)}...`);
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+        setTimeout(() => {
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }, 3000);
+    }
+}
+
+function pauseAudioNarration() {
+    console.log('Pause Narration button clicked');
+    
+    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        isNarrationPlaying = false;
+        
+        const playBtn = document.getElementById('playNarration');
+        const pauseBtn = document.getElementById('pauseNarration');
+        
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        
+        showNotification('Narration paused');
+    }
+}
+
+function adjustVolume(event) {
+    const volume = event.target.value / 100;
+    console.log('Volume adjusted to:', volume);
+    
+    // If speech synthesis is active, update volume
+    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+        // Note: Changing volume mid-speech isn't directly supported
+        // We'd need to stop and restart with new volume
+    }
+    
+    showNotification(`Volume: ${event.target.value}%`);
+}
+
+// 5. View Mode Functions
+function setViewMode(mode) {
+    console.log(`Setting view mode to: ${mode}`);
+    currentViewMode = mode;
+    
+    // Update button states
+    const dayBtn = document.getElementById('dayMode');
+    const nightBtn = document.getElementById('nightMode');
+    const historicalBtn = document.getElementById('historicalMode');
+    
+    [dayBtn, nightBtn, historicalBtn].forEach(btn => btn.classList.remove('active'));
+    
+    switch(mode) {
+        case 'day':
+            dayBtn.classList.add('active');
+            showNotification('Day view activated');
+            break;
+        case 'night':
+            nightBtn.classList.add('active');
+            showNotification('Night view activated');
+            break;
+        case 'historical':
+            historicalBtn.classList.add('active');
+            showNotification('Historical view activated');
+            break;
+    }
+    
+    // For Sketchfab models, we can't directly change lighting
+    // This would require a more complex integration
+    // For now, we just show a notification
+}
+
+// ===== INFO PANEL FUNCTIONS =====
+function setupInfoTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+}
+
+function updateInfoPanel(modelId) {
+    const site = heritageSites[modelId];
+    if (!site) return;
+    
+    // Update monument name
+    const monumentName = document.getElementById('monumentName');
+    if (monumentName) {
+        monumentName.textContent = site.name;
+    }
+    
+    // Update tab content
+    const historyTab = document.getElementById('history');
+    const architectureTab = document.getElementById('architecture');
+    const cultureTab = document.getElementById('culture');
+    const factsTab = document.getElementById('facts');
+    
+    if (historyTab) {
+        historyTab.innerHTML = `
+            <h4>Historical Background</h4>
+            <p>${site.history}</p>
+        `;
+    }
+    
+    if (architectureTab) {
+        architectureTab.innerHTML = `
+            <h4>Architectural Features</h4>
+            <p>${site.architecture}</p>
+        `;
+    }
+    
+    if (cultureTab) {
+        cultureTab.innerHTML = `
+            <h4>Cultural Significance</h4>
+            <p>${site.culture}</p>
+        `;
+    }
+    
+    if (factsTab) {
+        const factsList = site.facts.map(fact => `<li>${fact}</li>`).join('');
+        factsTab.innerHTML = `
+            <h4>Interesting Facts</h4>
+            <ul>${factsList}</ul>
+        `;
+    }
+    
+    // Show info panel if hidden
+    const infoPanel = document.getElementById('infoPanel');
+    if (infoPanel) {
+        infoPanel.style.display = 'block';
+    }
+}
+
+function switchTab(tabName) {
+    console.log(`Switching to tab: ${tabName}`);
+    
+    // Update tab buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
             btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Update tab content
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => {
+        if (pane.id === tabName) {
+            pane.classList.add('active');
+            pane.style.display = 'block';
+        } else {
+            pane.classList.remove('active');
+            pane.style.display = 'none';
         }
     });
 }
 
+function closeInfoPanel() {
+    console.log('Closing info panel');
+    const infoPanel = document.getElementById('infoPanel');
+    if (infoPanel) {
+        infoPanel.style.display = 'none';
+    }
+}
+
+// ===== UTILITY FUNCTIONS =====
+function showNotification(message) {
+    // Remove existing notification if any
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        animation: fadeInOut 3s forwards;
+    `;
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); display: none; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remove after animation
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(event) {
+    // Space bar to reset view
+    if (event.code === 'Space' && !event.target.matches('input, textarea')) {
+        event.preventDefault();
+        resetSketchfabView();
+    }
+    
+    // F for fullscreen
+    if (event.code === 'KeyF' && !event.target.matches('input, textarea')) {
+        event.preventDefault();
+        toggleFullscreen();
+    }
+    
+    // Number keys 1-5 for model switching
+    if (event.key >= '1' && event.key <= '5') {
+        const modelIndex = parseInt(event.key) - 1;
+        const modelButtons = document.querySelectorAll('.model-btn');
+        if (modelButtons[modelIndex]) {
+            event.preventDefault();
+            modelButtons[modelIndex].click();
+        }
+    }
+});
+
 // ===== EXPORT FOR GLOBAL ACCESS =====
 window.ExploreApp = {
-    loadHeritageSite,
-    toggleARMode,
-    playNarration,
-    pauseNarration,
-    showInfoPanel,
-    closeInfoPanel,
-    switchModel,
-    setupModelSwitcher
+    switchModel: switchModel,
+    toggleARMode: toggleARMode,
+    playAudioNarration: playAudioNarration,
+    pauseAudioNarration: pauseAudioNarration,
+    resetSketchfabView: resetSketchfabView,
+    toggleFullscreen: toggleFullscreen,
+    setViewMode: setViewMode,
+    showInfoPanel: function() {
+        const infoPanel = document.getElementById('infoPanel');
+        if (infoPanel) {
+            infoPanel.style.display = 'block';
+        }
+    },
+    closeInfoPanel: closeInfoPanel,
+    updateInfoPanel: updateInfoPanel
 };

@@ -23,9 +23,9 @@ let isSubmitting = false;
 
 // EmailJS Configuration
 const EMAILJS_CONFIG = {
-    serviceID: 'service_2hml1vj', // Your Gmail service ID
-    templateID: 'template_uduf597', // Your template ID
-    publicKey: 'gy2vaZWQSm5PWKOQ1H8FP' // Your public key
+    serviceID: 'service_21l6yoa', // Your Gmail service ID
+    templateID: 'template_2dv56sv', // Your template ID
+    publicKey: 'a0h_w88sTCxpaNFRP' // Your public key
 };
 
 // ===== INITIALIZATION =====
@@ -308,7 +308,7 @@ function sendEmailViaEmailJS(data) {
 
         // Validate configuration
         if (!EMAILJS_CONFIG.serviceID || !EMAILJS_CONFIG.templateID || 
-            EMAILJS_CONFIG.publicKey === 'YOUR_PUBLIC_KEY') {
+            EMAILJS_CONFIG.publicKey === 'a0h_w88sTCxpaNFRP') {
             console.warn('EmailJS not properly configured, using fallback method');
             return submitForm(data).then(resolve).catch(reject);
         }

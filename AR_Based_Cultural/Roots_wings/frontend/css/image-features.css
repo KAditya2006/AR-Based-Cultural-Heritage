@@ -1,0 +1,444 @@
+/* Image Upload Feature Styles */
+.image-btn {
+    background: none;
+    border: none;
+    color: #6C63FF;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-btn:hover {
+    background-color: #f0f0f0;
+    color: #5a52d5;
+}
+
+.image-preview-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #ddd;
+    animation: fadeIn 0.3s ease;
+}
+
+.image-preview {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.remove-image-btn:hover {
+    background: rgba(255, 0, 0, 1);
+    transform: scale(1.1);
+}
+
+.image-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.image-actions .btn {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.image-actions .btn-primary {
+    background: linear-gradient(135deg, #6C63FF 0%, #4A44C8 100%);
+    border: none;
+    color: white;
+}
+
+.image-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #5a52d5 0%, #3d37a9 100%);
+}
+
+.image-actions .btn-secondary {
+    background: #f8f9fa;
+    border: 2px solid #6C63FF;
+    color: #6C63FF;
+}
+
+.image-actions .btn-secondary:hover {
+    background: #6C63FF;
+    color: white;
+}
+
+/* Image Analysis Modal */
+.image-analysis-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.image-modal-content {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-modal-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6C63FF 0%, #4A44C8 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.image-modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    transform: rotate(90deg);
+}
+
+.image-modal-body {
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.original-image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.original-image-container h4 {
+    color: #333;
+    margin: 0;
+}
+
+#modalPreviewImage {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.analysis-results {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.loading-analysis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    height: 100%;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6C63FF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.analysis-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.analysis-item h5 {
+    color: #6C63FF;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.analysis-item p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+.feature-detection {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.feature-detection:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.confidence-meter {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.confidence-bar {
+    flex: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.confidence-value {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.image-modal-footer {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.image-modal-footer .btn {
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Image Messages in Chat */
+.message.with-image .message-content {
+    position: relative;
+}
+
+.image-message-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.chat-image {
+    max-width: 250px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.chat-image:hover {
+    transform: scale(1.02);
+}
+
+.image-caption {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+/* Input Suggestions */
+.image-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.image-suggestion i {
+    color: #6C63FF;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .image-modal-body {
+        grid-template-columns: 1fr;
+    }
+    
+    .image-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .image-actions {
+        flex-direction: column;
+    }
+    
+    .image-actions .btn {
+        width: 100%;
+    }
+    
+    .image-modal-footer {
+        flex-direction: column;
+    }
+    
+    .image-modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .image-modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .chat-image {
+        max-width: 200px;
+        max-height: 150px;
+    }
+    
+    .image-modal-body {
+        padding: 1rem;
+        gap: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* Add to existing image-features.css */
+
+.drag-over {
+    border-color: #6C63FF !important;
+    background-color: rgba(108, 99, 255, 0.1) !important;
+}
+
+.chat-input {
+    transition: all 0.3s ease;
+}
+
+/* Ensure image button is visible and working */
+.image-btn {
+    background: none;
+    border: none;
+    color: #6C63FF;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.image-btn:hover {
+    background-color: #f0f0f0;
+    color: #5a52d5;
+    transform: scale(1.1);
+}
+
+.input-container {
+    position: relative;
+}
+
+#imageUpload {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}

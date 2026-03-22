@@ -719,3 +719,71 @@ window.ChatbotApp = {
     clearChat,
     downloadChat
 };
+
+
+
+
+// Updated chatbot.js with voice integration
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // ... [existing chatbot.js code remains the same] ...
+    
+    // Add download functionality
+    const downloadChatBtn = document.getElementById('downloadChat');
+    if (downloadChatBtn) {
+        downloadChatBtn.addEventListener('click', function() {
+            if (window.voiceFeatures && typeof window.voiceFeatures.downloadChatAsText === 'function') {
+                window.voiceFeatures.downloadChatAsText();
+            } else {
+                // Fallback if voice features not loaded
+                alert('Download feature not available. Please refresh the page.');
+            }
+        });
+    }
+    
+    // Add clear chat functionality
+    const clearChatBtn = document.getElementById('clearChat');
+    if (clearChatBtn) {
+        clearChatBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear the chat history?')) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    // Keep only the first welcome message
+                    const welcomeMessage = chatMessages.querySelector('.bot-message');
+                    chatMessages.innerHTML = '';
+                    if (welcomeMessage) {
+                        chatMessages.appendChild(welcomeMessage);
+                    }
+                    
+                    // Stop any ongoing speech
+                    if (window.voiceFeatures && typeof window.voiceFeatures.stopSpeaking === 'function') {
+                        window.voiceFeatures.stopSpeaking();
+                    }
+                    
+                    // Show notification
+                    if (window.imageFeatures && typeof window.imageFeatures.showNotification === 'function') {
+                        window.imageFeatures.showNotification('Chat cleared successfully', 'success');
+                    } else {
+                        alert('Chat cleared successfully');
+                    }
+                }
+            }
+        });
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+D to download
+        if (e.ctrlKey && e.key === 'd') {
+            e.preventDefault();
+            if (downloadChatBtn) downloadChatBtn.click();
+        }
+        
+        // Ctrl+L to clear chat
+        if (e.ctrlKey && e.key === 'l') {
+            e.preventDefault();
+            if (clearChatBtn) clearChatBtn.click();
+        }
+    });
+});

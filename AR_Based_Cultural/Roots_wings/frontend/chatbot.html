@@ -10,7 +10,136 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/chatbot.css">
+    <link rel="stylesheet" href="css/image-features.css">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <style>
+        /* Notification animations */
+        @keyframes notificationSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes notificationSlideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Voice control styles */
+        .voice-control-active {
+            color: #6C63FF !important;
+            background-color: rgba(108, 99, 255, 0.1) !important;
+        }
+        
+        .speaking-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #6C63FF;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .message-speak-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(108, 99, 255, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+        
+        .message-bubble:hover .message-speak-btn {
+            opacity: 1;
+        }
+        
+        .message-speak-btn:hover {
+            background: #6C63FF;
+            transform: scale(1.1);
+        }
+        
+        .voice-settings {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1rem;
+            width: 250px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .voice-settings.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .voice-setting-item {
+            margin-bottom: 1rem;
+        }
+        
+        .voice-setting-item label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .voice-setting-item select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .voice-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -119,6 +248,14 @@
                                 <i class="fas fa-globe feature-icon"></i>
                                 <span>Multi-language Support</span>
                             </div>
+                            <div class="feature-item">
+                                <i class="fas fa-image feature-icon"></i>
+                                <span>Image Analysis</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-file-download feature-icon"></i>
+                                <span>Chat Download</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,10 +267,19 @@
                         <div class="chat-title">
                             <h3>Chat with Heritage Assistant</h3>
                             <span class="online-indicator">● Online</span>
+                            <span id="speakingIndicator" class="hidden" style="margin-left: 10px; color: #6C63FF;">
+                                <span class="speaking-indicator"></span> Speaking...
+                            </span>
                         </div>
                         <div class="chat-controls">
-                            <button id="voiceToggle" class="control-btn" title="Click to Speak Last Message (Spacebar)">
+                            <button id="voiceToggle" class="control-btn" title="Speak Last Message (Spacebar)">
                                 <i class="fas fa-play btn-icon"></i>
+                            </button>
+                            <button id="textToSpeechToggle" class="control-btn" title="Enable/Disable Voice Responses">
+                                <i class="fas fa-volume-up btn-icon"></i>
+                            </button>
+                            <button id="voiceSettingsBtn" class="control-btn" title="Voice Settings">
+                                <i class="fas fa-cog btn-icon"></i>
                             </button>
                             <button id="clearChat" class="control-btn" title="Clear Chat">
                                 <i class="fas fa-trash btn-icon"></i>
@@ -148,9 +294,13 @@
                     <div class="chat-messages" id="chatMessages">
                         <div class="message bot-message">
                             <div class="message-avatar">
+                                <img src="images/chatbot-avatar.png" alt="Bot" class="avatar-img">
                             </div>
                             <div class="message-content">
                                 <div class="message-bubble">
+                                    <button class="message-speak-btn" title="Speak this message">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
                                     <p><i class="fas fa-hands"></i> Namaste! I'm your Heritage Assistant. I'm here to help you explore India's rich cultural heritage, magnificent monuments, vibrant festivals, and ancient traditions.</p>
                                     <p>Feel free to ask me anything about:</p>
                                     <ul>
@@ -160,7 +310,10 @@
                                         <li><i class="fas fa-globe"></i> UNESCO World Heritage Sites</li>
                                         <li><i class="fas fa-music"></i> Classical arts and dance forms</li>
                                         <li><i class="fas fa-paint-brush"></i> Indian art forms and styles</li>
+                                        <li><i class="fas fa-image"></i> <strong>New:</strong> Upload images for analysis!</li>
                                     </ul>
+                                    <p><strong>Try it:</strong> Upload an image of any Indian monument using the <i class="fas fa-image"></i> button below!</p>
+                                    <p><strong>Voice Features:</strong> Click the <i class="fas fa-volume-up"></i> button on any message to hear it spoken aloud!</p>
                                 </div>
                                 <div class="message-time">Just now</div>
                             </div>
@@ -168,7 +321,7 @@
                     </div>
 
                     <!-- Typing Indicator -->
-                    <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
                         <div class="message bot-message">
                             <div class="message-avatar">
                                 <img src="images/chatbot-avatar.png" alt="Bot" class="avatar-img">
@@ -191,6 +344,13 @@
                             <button id="voiceInput" class="voice-btn" title="Voice Input">
                                 <i class="fas fa-microphone btn-icon"></i>
                             </button>
+                            
+                            <!-- Image Upload Button -->
+                            <button id="imageUploadBtn" class="image-btn" title="Upload Image">
+                                <i class="fas fa-image btn-icon"></i>
+                            </button>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                            
                             <input 
                                 type="text" 
                                 id="messageInput" 
@@ -201,10 +361,32 @@
                                 <i class="fas fa-paper-plane btn-icon"></i>
                             </button>
                         </div>
+                        
+                        <!-- Image Preview Container -->
+                        <div id="imagePreviewContainer" class="image-preview-container hidden">
+                            <div class="image-preview">
+                                <img id="previewImage" src="" alt="Preview">
+                                <button id="removeImage" class="remove-image-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="image-actions">
+                                <button id="analyzeImage" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Analyze Image
+                                </button>
+                                <button id="clearImage" class="btn btn-secondary">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="input-suggestions" id="inputSuggestions">
                             <button class="suggestion-btn">Tell me about Taj Mahal</button>
                             <button class="suggestion-btn">What is Diwali?</button>
                             <button class="suggestion-btn">UNESCO sites in India</button>
+                            <!-- <button class="suggestion-btn image-suggestion" id="uploadImageSuggestion">
+                                <i class="fas fa-image"></i> Upload heritage image
+                            </button> -->
                         </div>
                     </div>
                 </div>
@@ -248,6 +430,64 @@
         </div>
     </div>
 
+    <!-- Image Analysis Modal -->
+    <div id="imageAnalysisModal" class="image-analysis-modal hidden">
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <h3>Image Analysis</h3>
+                <button id="closeImageModal" class="close-modal-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="image-modal-body">
+                <div class="original-image-container">
+                    <h4>Uploaded Image</h4>
+                    <img id="modalPreviewImage" src="" alt="Image to analyze">
+                </div>
+                <div class="analysis-results" id="analysisResults">
+                    <div class="loading-analysis">
+                        <div class="spinner"></div>
+                        <p>Analyzing image for heritage elements...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="image-modal-footer">
+                <button id="askAboutImage" class="btn btn-primary">
+                    <i class="fas fa-question-circle"></i> Ask about this image
+                </button>
+                <button id="closeModal" class="btn btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Settings Panel -->
+    <div id="voiceSettingsPanel" class="voice-settings">
+        <h4 style="margin-top: 0; margin-bottom: 1rem;">Voice Settings</h4>
+        <div class="voice-setting-item">
+            <label for="voiceSelect">Select Voice:</label>
+            <select id="voiceSelect">
+                <option value="">Default System Voice</option>
+            </select>
+        </div>
+        <div class="voice-setting-item">
+            <label for="rateSlider">Speech Rate: <span id="rateValue">1.0</span></label>
+            <input type="range" id="rateSlider" class="voice-slider" min="0.5" max="2" step="0.1" value="1">
+        </div>
+        <div class="voice-setting-item">
+            <label for="pitchSlider">Speech Pitch: <span id="pitchValue">1.0</span></label>
+            <input type="range" id="pitchSlider" class="voice-slider" min="0.5" max="2" step="0.1" value="1">
+        </div>
+        <div class="voice-setting-item">
+            <label for="volumeSlider">Volume: <span id="volumeValue">1.0</span></label>
+            <input type="range" id="volumeSlider" class="voice-slider" min="0" max="1" step="0.1" value="1">
+        </div>
+        <button id="saveVoiceSettings" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-save"></i> Save Settings
+        </button>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -274,7 +514,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Roots & Wings | Smart India Hackathon 2025. All rights reserved.</p>
+                <p>&copy; 2025 Roots & Wings | BPUT Project Exhibition 2025</p>
                 <div class="visitor-counter">
                     <p>Visitors: <a href='http://www.freevisitorcounters.com'>Free Counters</a></p>
                     <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=2eb59dbfece33e4c51c62ccb7912bf6b3c96d291'></script>
@@ -287,5 +527,23 @@
     <!-- JavaScript -->
     <script src="js/main.js"></script>
     <script src="js/chatbot.js"></script>
+    <script src="js/image-features.js"></script>
+    <script src="js/voice-features.js"></script>
+    <script>
+        // Initialize features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize image features
+            if (typeof ImageAnalysisFeature !== 'undefined') {
+                window.imageFeatures = new ImageAnalysisFeature();
+                console.log('Image Analysis Feature initialized');
+            }
+            
+            // Initialize voice features
+            if (typeof VoiceFeatures !== 'undefined') {
+                window.voiceFeatures = new VoiceFeatures();
+                console.log('Voice Features initialized');
+            }
+        });
+    </script>
 </body>
 </html>
